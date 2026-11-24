@@ -86,7 +86,6 @@ const useMusixmatchLyrics = (artist: string, trackTitle: string, lyricsType: Lyr
         return Promise.reject(new Error("No lyrics type selected"));
       }
 
-      // Get the axios configuration for the request
       const configResult =
         lyricsType === "lyrics"
           ? await musixmatchApi.getLyricsRequest(trackTitle, artist)
@@ -96,19 +95,16 @@ const useMusixmatchLyrics = (artist: string, trackTitle: string, lyricsType: Lyr
         throw new Error(`Failed to get ${lyricsType} config: ${configResult.error}`);
       }
 
-      // Use yandexMusicMod.axios to make the request
       const response = await (window as any).yandexMusicMod.axios(configResult.value);
 
       if (!response.success) {
         throw new Error(`Failed to get ${lyricsType}: ${response.error}`);
       }
 
-      // Check Musixmatch API response status
       if (response.data.message.header.status_code !== 200) {
         throw new Error(`Musixmatch API error: ${response.data.message.body}`);
       }
 
-      // Extract the data based on the type
       const data =
         lyricsType === "lyrics"
           ? (response.data.message.body.lyrics as Lyrics)

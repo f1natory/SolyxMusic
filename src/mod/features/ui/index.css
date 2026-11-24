@@ -2,6 +2,9 @@
 
 @plugin "tailwindcss-animate";
 
+@import "./styles/player.css";
+@import "../../visual/engine/styles/index.css";
+
 @custom-variant dark (&:is(.ym-dark-theme *));
 
 :root {
@@ -144,15 +147,171 @@ div[data-test-id="LIKES_HISTORY_COVERS"] {
 [data-sonner-toaster] [data-icon] {
   margin-top: 3px;
 }
-
-/* Фикс фулскрин обложек которые съезжали влево */
-.swiper-slide.swiper-slide-active {
-  display: flex;
-  justify-content: center;
-  justify-items: center;
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper),
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktop_root"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktop_root"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktop_modalContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktop_modalContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="averageColorBackground"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="averageColorBackground"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="_averageColorBackground__"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="_averageColorBackground__"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_root"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_root"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_fullscreenContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_fullscreenContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_additionalContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_additionalContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_syncLyrics"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_syncLyrics"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_syncLyricsContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_syncLyricsContent"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="SyncLyrics_root"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="SyncLyrics_root"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="SyncLyrics_content"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="SyncLyrics_content"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[data-test-id="SYNC_LYRICS_CONTENT"],
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[data-test-id="SYNC_LYRICS_CONTENT"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  --player-average-color-background: transparent !important;
+}
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="SyncLyrics_content"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="SyncLyrics_content"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="SyncLyrics_content"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="SyncLyrics_content"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_syncLyricsContent"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_syncLyricsContent"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_syncLyricsContent"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_syncLyricsContent"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[data-test-id="SYNC_LYRICS_CONTENT"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[data-test-id="SYNC_LYRICS_CONTENT"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[data-test-id="SYNC_LYRICS_CONTENT"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[data-test-id="SYNC_LYRICS_CONTENT"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="SyncLyrics_root"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="SyncLyrics_root"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="SyncLyrics_root"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="SyncLyrics_root"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_additionalContent"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_additionalContent"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="FullscreenPlayerDesktopContent_additionalContent"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="FullscreenPlayerDesktopContent_additionalContent"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="PlayQueue_root"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="PlayQueue_root"]::before,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg div[class*="PlayQueue_root"]::after,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) div[class*="PlayQueue_root"]::after {
+  background: none !important;
+  background-image: none !important;
+  display: none !important;
+  content: none !important;
 }
 
-/* Скрываем кнопку доната артиста */
-div[class*="PageHeaderArtist_donateControl__"] {
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"] {
+  position: fixed !important;
+  overflow: hidden !important;
+}
+
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg > header,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) > header,
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"].has-visual-bg > div:not(.visual-fullscreen-bg-wrapper),
+div[data-test-id="FULLSCREEN_PLAYER_MODAL"]:has(.visual-fullscreen-bg-wrapper) > div:not(.visual-fullscreen-bg-wrapper) {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.visual-fullscreen-bg-wrapper {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+div[data-test-id="SYNC_LYRICS_CONTENT"] {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+div[class*="FullscreenPlayerDesktopContent_additionalContent"] {
+  width: 50% !important;
+  max-width: calc(50vw - var(--fullscreen-player-additional-content-indent-px, 2.75rem)) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+div[class*="FullscreenPlayerDesktopContent_syncLyrics"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+div[class*="SyncLyrics_root"],
+div[class*="SyncLyrics_content"] {
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+}
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics > :not(.visual-native-lyrics-wrapper) {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics div[data-test-id="SYNC_LYRICS_LINE"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="SyncLyricsLoader" i],
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="SyncLyricsCounter" i],
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="SyncLyricsScroller_counter" i],
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="syncLyricsLoader" i],
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="syncLyricsCounter" i],
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="counter" i],
+div[data-test-id="SYNC_LYRICS_CONTENT"].has-visual-lyrics [class*="counterLine" i] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  animation: none !important;
+}
+
+div[data-test-id="SYNC_LYRICS_CONTENT"] > .visual-native-lyrics-wrapper {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  z-index: 20 !important;
+  background: transparent !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  padding-right: 2.5rem !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif !important;
+  letter-spacing: -0.012em !important;
+}
+
+.visual-native-lyrics-wrapper button {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif !important;
+}
+[data-test-id="WORDS_AI_BADGE"] [class*="AiBadge_glow__"] {
   display: none !important;
 }

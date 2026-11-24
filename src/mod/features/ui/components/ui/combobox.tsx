@@ -72,7 +72,6 @@ function Combobox({
   const [open, setOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState(value || "");
 
-  // Use controlled value if provided, otherwise use internal state
   const currentValue = value !== undefined ? value : internalValue;
 
   const handleValueChange = React.useCallback(
@@ -151,7 +150,6 @@ function Combobox({
   );
 }
 
-// Additional convenient hook for managing combobox state
 function useCombobox({
   defaultValue = "",
   onChange,

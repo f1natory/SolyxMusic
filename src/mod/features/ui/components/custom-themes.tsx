@@ -17,7 +17,6 @@ import {
 
 import { Palette } from "lucide-react";
 
-// Predefined accent colors - simple hex array
 const ACCENT_COLORS = ["#fed42b", "#4A9EFF", "#34c72c", "#e74343", "#b74bd9", "#f161c4"];
 
 export const MENU_ITEMS = [
@@ -44,6 +43,9 @@ export function CustomThemes() {
   const [hiddenMenuItems, setHiddenMenuItems] = useState<Array<string>>([]);
   const [showReloadConfirm, setShowReloadConfirm] = useState(false);
 
+  const [visualBgEnabled, setVisualBgEnabled] = useState(true);
+  const [visualLyricsEnabled, setVisualLyricsEnabled] = useState(true);
+
   useEffect(() => {
     (async () => {
       const colorsEnabled = await (window as any).yandexMusicMod.getStorageValue("custom-themes/enabled");
@@ -67,13 +69,64 @@ export function CustomThemes() {
       setDisableVibeAnimation(disableVibeAnimation);
       setDisableExplicitMark(disableExplicitMark);
       setHiddenMenuItems(hiddenMenuItems || []);
+
+      const bgVal = await (window as any).yandexMusicMod?.getStorageValue("visual/visualBackgroundEnabled");
+      setVisualBgEnabled(bgVal === false ? false : true);
+
+      const lyricsVal = await (window as any).yandexMusicMod?.getStorageValue("visual/visualLyricsEnabled");
+      setVisualLyricsEnabled(lyricsVal === false ? false : true);
     })();
+
+    const cleanup = (window as any).yandexMusicMod?.onStorageChanged((key: string, value: any) => {
+      if (key === "visual/visualBackgroundEnabled") {
+        setVisualBgEnabled(value !== false);
+      }
+      if (key === "visual/visualLyricsEnabled") {
+        setVisualLyricsEnabled(value !== false);
+      }
+    });
+
+    return () => {
+      if (typeof cleanup === "function") cleanup();
+    };
   }, []);
 
   return (
     <ExpandableCard title="Интерфейс и тема" icon={<Palette className="h-4 w-4" />}>
       <div className="flex flex-col gap-4 pt-2 px-3">
-        {/* Custom Colors Section */}
+
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <Switch
+              id="settings-visual-bg-toggle"
+              checked={visualBgEnabled}
+              onCheckedChange={(enabled) => {
+                setVisualBgEnabled(enabled);
+                (window as any).yandexMusicMod?.setStorageValue("visual/visualBackgroundEnabled", enabled);
+              }}
+            />
+            <Label htmlFor="settings-visual-bg-toggle" className="cursor-pointer">
+              Изменить фон
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              id="settings-visual-lyrics-toggle"
+              checked={visualLyricsEnabled}
+              onCheckedChange={(enabled) => {
+                setVisualLyricsEnabled(enabled);
+                (window as any).yandexMusicMod?.setStorageValue("visual/visualLyricsEnabled", enabled);
+              }}
+            />
+            <Label htmlFor="settings-visual-lyrics-toggle" className="cursor-pointer">
+              Изменить текст
+            </Label>
+          </div>
+        </div>
+
+        <div className="h-px bg-border my-1" />
+
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
             <Switch

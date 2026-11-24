@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    // Environment setup & latest features
+
     "lib": ["DOM", "ES2022"],
     "types": ["node"],
     "target": "ESNext",
@@ -9,20 +9,17 @@
     "jsx": "react-jsx",
     "allowJs": true,
 
-    // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
-    // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
 
-    // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
@@ -30,7 +27,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@ui/*": ["./src/mod/features/ui/*"]
+      "@ui/*": ["./src/mod/features/ui/*"],
+      "@visual/*": ["./src/mod/visual/engine/*"],
+      "@visual": ["./src/mod/visual/engine/index.ts"],
+      "@visual-formats/*": ["./src/mod/visual/formats/*"]
     }
   },
   "include": ["./**/*"]

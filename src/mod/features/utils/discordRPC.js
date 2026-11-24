@@ -36,7 +36,7 @@ function initRpc() {
 }
 
 async function updateActivity() {
-  setTimeout(updateActivity, 500);
+  setTimeout(updateActivity, 2500);
 
   if (lastActivityChanged + ACTIVITY_COOLDOWN > Date.now()) return;
 
@@ -45,7 +45,6 @@ async function updateActivity() {
   try {
     const playerState = await GetAppPlayerState();
 
-    // Discord RPC не включен
     if (!playerState.enabled) {
       client.user.clearActivity();
       return;
@@ -79,7 +78,7 @@ async function updateActivity() {
       endTimestamp: endTimestamp,
       buttons: [
         {
-          label: "🎵 Открыть",
+          label: "Открыть",
           url: `https://music.yandex.ru/track/${playerStateData.trackMeta.id}`,
         },
       ],
@@ -88,11 +87,10 @@ async function updateActivity() {
 
     if (playerState.showModButton) {
       rpcRequest.buttons.push({
-        label: "💻 Yandex Music Mod",
-        url: `https://github.com/Stephanzion/YandexMusicBetaMod`,
+        label: "Solyx Music",
+        url: "https://github.com/f1natory/SolyxMusic",
       });
     }
-
     client.user.setActivity(rpcRequest);
 
     lastActivityChanged = Date.now();

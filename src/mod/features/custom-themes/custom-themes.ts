@@ -47,14 +47,8 @@ async function updateTheme() {
         {
           --player-average-color-background: var(--yandexMusicModPalette-200) !important;
         }
-        .ym-dark-theme 
-        div[data-test-id="FULLSCREEN_PLAYER_MODAL"]
-        {
-          --player-average-color-background: var(--yandexMusicModPalette-200) !important;
-        }
         .ym-light-theme
-        section[data-test-id="PLAYERBAR_DESKTOP"],
-        div[data-test-id="FULLSCREEN_PLAYER_MODAL"]
+        section[data-test-id="PLAYERBAR_DESKTOP"]
         {
           --player-average-color-background: var(--yandexMusicModPalette-700) !important;
         }
@@ -113,7 +107,7 @@ async function updateTheme() {
 
 function updateVibeBackgroundColor() {
   function hexToHue(hex: string, offset = 0) {
-    // убрать #
+
     hex = hex.replace(/^#/, "");
     if (hex.length === 3) {
       hex = hex
@@ -147,7 +141,6 @@ function updateVibeBackgroundColor() {
       if (h < 0) h += 360;
     }
 
-    // применяем смещение
     h = (h + offset) % 360;
     if (h < 0) h += 360;
 
@@ -163,7 +156,6 @@ function updateVibeBackgroundColor() {
     const computed = getComputedStyle(el).color;
     document.body.removeChild(el);
 
-    // Парсим color(srgb ...) или rgb(...)
     let match;
     if (computed.startsWith("color(srgb")) {
       match = computed.match(/color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)/);
@@ -209,7 +201,6 @@ window.yandexMusicMod.onStorageChanged((key: string, value: any) => {
 
 updateTheme();
 
-// Перехват запросов к backgroundWorker
 (function () {
   window.__workers = [];
   const OrigWorker = window.Worker as any;
@@ -232,7 +223,6 @@ updateTheme();
 
   const _atob = atob;
 
-  // Патч offscreen canvas который управляет vibe анимацией
   window.atob = function (str) {
     const decoded = _atob(str);
     if (decoded.includes("updateBackgroundColor(t){this.background=new c(t,t,t)}")) {

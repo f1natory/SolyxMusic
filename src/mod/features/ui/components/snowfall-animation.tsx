@@ -12,8 +12,8 @@ import Snowfall from "react-snowfall";
 const getIsNewYear = () => {
   const date = new Date();
   const year = date.getFullYear();
-  const start = new Date(year, 11, 10); // 10 декабря
-  const end = new Date(year + 1, 0, 15); // 15 января следующего года
+  const start = new Date(year, 11, 10);
+  const end = new Date(year + 1, 0, 15);
 
   return date >= start && date <= end;
 };

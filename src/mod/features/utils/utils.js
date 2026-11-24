@@ -2,7 +2,6 @@ const YandexApiOnRequestHandlers = [];
 const YandexApiOnResponseHandlers = [];
 const originalFetch = window.fetch;
 
-// отключить попытку отправки аналитики. Она и так заблочена, но без этого будет сыпать ошибками в консоль
 navigator.sendBeacon = function (...args) {
   return true;
 };
@@ -11,21 +10,19 @@ navigator.sendBeacon = function (...args) {
   const originalAppendChild = document.head.appendChild;
 
   document.head.appendChild = function (element) {
-    // Проверяем, что это script элемент
+
     if (element instanceof HTMLScriptElement) {
       const src = element.src || "";
 
-      // Проверяем URL
       if (
         src.includes("https://yandex.ru/ads/system/adsdk.js") ||
         src.includes("https://mc.yandex.ru/metrika/tag.js")
       ) {
         console.log("Заблокирована попытка добавить Yandex скрипт:", src);
-        return true; // Возвращаем true как указано в требованиях
+        return true;
       }
     }
 
-    // Для всех остальных элементов используем оригинальный метод
     return originalAppendChild.call(this, element);
   };
 })();
@@ -34,7 +31,6 @@ export function initFetchInterceptor() {
   window.fetch = function (...args) {
     var request = [...args][0];
 
-    // отключить попытку отправки аналитики. Она и так заблочена, но без этого будет сыпать ошибками в консоль
     if (
       request &&
       request.url &&

@@ -41,7 +41,6 @@ export function ExperimentsToggle() {
     retry: true,
   });
 
-  // Filter experiments based on search
   const filteredExperiments = useMemo(() => {
     return accountExperiments.filter(
       (experiment) =>
@@ -50,21 +49,18 @@ export function ExperimentsToggle() {
     );
   }, [accountExperiments, search]);
 
-  // Get current experiment data
   const currentExperiment = useMemo(() => {
     return accountExperiments.find((exp) => exp.id === selectedExperimentId);
   }, [accountExperiments, selectedExperimentId]);
 
-  // Handle saving experiment override
   const handleSave = async () => {
     if (!selectedExperimentId || !editedValue) return;
 
     setIsSaving(true);
     try {
-      // Parse and validate JSON
+
       const parsedValue = JSON.parse(editedValue);
 
-      // Update override array
       const newOverrides = [...accountExperimentsOverride];
       const existingIndex = newOverrides.findIndex((override) => override.id === selectedExperimentId);
 
@@ -74,7 +70,6 @@ export function ExperimentsToggle() {
         newOverrides.push({ id: selectedExperimentId, value: parsedValue });
       }
 
-      // Save to storage
       await (window as any).yandexMusicMod.setStorageValue("settings/accountExperimentsOverride", newOverrides);
       setAccountExperimentsOverride(newOverrides);
       setHasUnsavedChanges(false);
@@ -87,7 +82,6 @@ export function ExperimentsToggle() {
     }
   };
 
-  // Handle ON button click
   const handleOnClick = async () => {
     if (!selectedExperimentId) {
       toast.error("Выберите эксперимент");
@@ -104,7 +98,6 @@ export function ExperimentsToggle() {
         },
       };
 
-      // Update override array
       const newOverrides = [...accountExperimentsOverride];
       const existingIndex = newOverrides.findIndex((override) => override.id === selectedExperimentId);
 
@@ -114,7 +107,6 @@ export function ExperimentsToggle() {
         newOverrides.push({ id: selectedExperimentId, value: onValue });
       }
 
-      // Save to storage
       await (window as any).yandexMusicMod.setStorageValue("settings/accountExperimentsOverride", newOverrides);
       setAccountExperimentsOverride(newOverrides);
       setHasUnsavedChanges(false);
@@ -135,17 +127,15 @@ export function ExperimentsToggle() {
 
       setAccountExperiments(experiments);
 
-      // Auto-select first experiment if none selected
       if (!selectedExperimentId && experiments.length > 0) {
         setSelectedExperimentId(experiments[0]!.id);
       }
     }
   }, [accountExperimentsQuery.data, selectedExperimentId]);
 
-  // Update edited value when selected experiment changes
   useEffect(() => {
     if (currentExperiment) {
-      // Check if there's an override for this experiment
+
       const override = accountExperimentsOverride.find((override) => override.id === selectedExperimentId);
       const valueToShow = override ? override.value : currentExperiment.value;
 
@@ -157,7 +147,6 @@ export function ExperimentsToggle() {
     }
   }, [currentExperiment, selectedExperimentId, accountExperimentsOverride]);
 
-  // Handle edited value changes
   useEffect(() => {
     if (currentExperiment) {
       const override = accountExperimentsOverride.find((override) => override.id === selectedExperimentId);
@@ -291,7 +280,7 @@ export function ExperimentsToggle() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      // Reset to original value
+
                       const override = accountExperimentsOverride.find(
                         (override) => override.id === selectedExperimentId,
                       );

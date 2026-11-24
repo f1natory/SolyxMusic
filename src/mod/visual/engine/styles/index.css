@@ -1,0 +1,34 @@
+
+
+.visual-lyric-player {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	max-width: 100%;
+	box-sizing: border-box;
+	color: var(--visual-lp-color, white);
+	contain: strict;
+	mix-blend-mode: plus-lighter;
+	font-size: var(--visual-lp-font-size, max(max(5vh, 2.5vw), 12px));
+
+	@media screen and (max-width: 768px) {
+		font-size: var(--visual-lp-font-size, max(8vw, 12px));
+	}
+
+	&.dom {
+		--visual-lp-line-width-aspect: 0.8;
+		--visual-lp-line-padding-x: 1em;
+		--visual-lp-bg-line-scale: 0.7;
+		user-select: none;
+		box-sizing: content-box;
+		z-index: 1;
+		line-height: 1.2;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.visual-lyric-player {
+		--visual-lp-line-width-aspect: 1;
+		--visual-lp-line-padding-x: 0;
+	}
+}

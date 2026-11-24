@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 electron.contextBridge.exposeInMainWorld("yandexMusicMod", {
   getStorageValue: (key: string) => electron.ipcRenderer.invoke("yandexMusicMod.getStorageValue", key),
   setStorageValue: (key: string, value: any) => electron.ipcRenderer.send("yandexMusicMod.setStorageValue", key, value),
@@ -14,12 +12,4 @@ electron.contextBridge.exposeInMainWorld("yandexMusicMod", {
   selectDownloadFolder: () => electron.ipcRenderer.invoke("yandexMusicMod.selectDownloadFolder"),
   openFolder: (folderPath: string) => electron.ipcRenderer.invoke("yandexMusicMod.openFolder", folderPath),
   axios: (config: any) => electron.ipcRenderer.invoke("yandexMusicMod.axios", config),
-});
-
-// Register Ctrl+Shift+I to open DevTools
-electron.globalShortcut.register("CommandOrControl+Shift+I", () => {
-  const focusedWindow = electron.BrowserWindow.getFocusedWindow();
-  if (focusedWindow) {
-    focusedWindow.webContents.toggleDevTools();
-  }
 });

@@ -1,5 +1,4 @@
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { useQuery } from "@tanstack/react-query";
 
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@ui/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip";
@@ -14,57 +13,43 @@ import { FontChanger } from "@ui/components/font-changer";
 import { Devtools } from "@ui/components/devtools";
 import { Downloader } from "@ui/components/downloader";
 import { AutoBestQuality } from "@ui/components/auto-best-quality";
-import { DiscordRPC } from "@ui/components/discord-rpc";
-import { Settings } from "@ui/components/settings";
 import { AutoLiker } from "@ui/components/auto-liker";
 import { ExperimentsToggle } from "@ui/components/experiments-toggle";
 import { ScaleChanger } from "@ui/components/scale-changer";
 import { CustomThemes } from "@ui/components/custom-themes";
 import { NewYearSnowfall, NewYearSnowfallAnimation } from "@ui/components/snowfall-animation";
 
+import { BackgroundLayer } from "./components/visual/BackgroundLayer";
+import { FullscreenVisualBackground } from "./components/visual/FullscreenVisualBackground";
+import { NativeLyricsEnhancer } from "./components/visual/NativeLyricsEnhancer";
+import { ExpandableCard } from "@ui/components/ui/expandable-card";
+
 import { Button } from "./components/ui/button";
 
-import logo from "@ui/assets/logo.webp?inline";
-import discordBg from "@ui/assets/discord-bg.png?inline";
-import boostyBg from "@ui/assets/boosty-bg.png?inline";
+import { SolyxLogo } from "@ui/components/solyx-logo";
 
-import { FaDiscord, FaGithub } from "react-icons/fa";
-import { SiBoosty } from "react-icons/si";
-import { RxUpdate } from "react-icons/rx";
+import { FaTelegramPlane, FaGithub } from "react-icons/fa";
+import { Heart, ExternalLink } from "lucide-react";
 
 const IS_DEV = false;
-const DISCORD_INVITE_URL = "https://discord.gg/4nK7nk2sY8";
-const BOOSTY_URL = "https://boosty.to/yandexmusic";
-const GITHUB_REPO_URL = "https://github.com/Stephanzion/YandexMusicBetaMod/";
+const TELEGRAM_CHANNEL_URL = "https://t.me/SolyxClub";
+const F1NATORY_GITHUB_URL = "https://github.com/f1natory/SolyxMusic";
+const ORIGINAL_MOD_URL = "https://github.com/Stephanzion/YandexMusicBetaMod";
 
 export default function App() {
   const [mountNode, setMountNode] = useState<HTMLDivElement | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(IS_DEV);
   const [devtoolsEnabled, setDevtoolsEnabled] = useState(false);
 
-  const appMetaQuery = useQuery({
-    queryKey: ["appMeta"],
-    queryFn: async () => {
-      const data = await fetch(
-        "https://raw.githubusercontent.com/Stephanzion/YandexMusicBetaMod/refs/heads/master/.meta/meta.json",
-      );
-      if (data.status !== 200) {
-        throw new Error("Failed to fetch app meta");
-      }
-      return data.json();
-    },
-    enabled: true,
-    retry: true,
-  });
-
   useEffect(() => {
     (async () => {
       setDevtoolsEnabled((await window.yandexMusicMod.getStorageValue("devtools/enabled")) || false);
     })();
 
-    window.yandexMusicMod.onStorageChanged((key: string, value: any) => {
+    const cleanup = window.yandexMusicMod.onStorageChanged((key: string, value: any) => {
       if (key.includes("devtools/enabled")) setDevtoolsEnabled(value);
     });
+    return () => { if (typeof cleanup === "function") cleanup(); };
   }, []);
 
   useEffect(() => {
@@ -114,12 +99,7 @@ export default function App() {
   const sheetTrigger = (
     <>
       <SheetTrigger className="flex w-full items-center justify-center gap-2.5 rounded-full border-2 border-[var(--ym-outline-color-primary-disabled)] p-[5px] text-[var(--ym-controls-color-primary-text-enabled_variant)] transition-colors duration-100 ease-in-out hover:bg-[var(--ym-surface-color-primary-enabled-list)] px-6">
-        <div
-          className="h-[25px] w-[25px] bg-contain bg-no-repeat"
-          style={{
-            backgroundImage: `url(${logo})`,
-          }}
-        ></div>
+        <SolyxLogo className="h-[25px] w-[25px] shrink-0" />
         <span className="trigger-text hidden lg:inline">Меню мода</span>
         <Toaster position="bottom-right" />
       </SheetTrigger>
@@ -130,9 +110,17 @@ export default function App() {
 
   return (
     <ThemeProvider>
+
+      <FullscreenVisualBackground />
+
+      <NativeLyricsEnhancer />
+
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         {mountNode && createPortal(sheetTrigger, mountNode)}
         <SheetContent side="left" className="w-full" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <SheetTitle className="sr-only">Меню модификации</SheetTitle>
+          <SheetDescription className="sr-only">Настройки и расширения Яндекс Музыки</SheetDescription>
+
           <div
             id="header"
             className="flex items-center justify-between px-4"
@@ -144,14 +132,9 @@ export default function App() {
 
           <div className="bg-secondary/20 m-3 mb-0 flex justify-between rounded-md border px-4 py-2 shadow-sm">
             <div className="flex items-center gap-2">
-              <div
-                className="h-6 w-6 bg-contain bg-no-repeat"
-                style={{
-                  backgroundImage: `url(${logo})`,
-                }}
-              />
-              <span className="text-foreground text-base font-semibold">Yandex Music Mod</span>
-              <span className="text-muted-foreground text-xs font-semibold">v{import.meta.env.VITE_MOD_VERSION}</span>
+              <SolyxLogo className="h-6 w-6 shrink-0 text-foreground" />
+              <span className="text-foreground text-base font-semibold">Solyx Music</span>
+              <span className="text-muted-foreground text-xs font-semibold">v{import.meta.env.VITE_MOD_VERSION || "5.126.1"}</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -160,13 +143,14 @@ export default function App() {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => window.open(DISCORD_INVITE_URL, "_blank", "noreferrer")}
+                    aria-label="Telegram-канал SolyxClub"
+                    onClick={() => window.open(TELEGRAM_CHANNEL_URL, "_blank", "noreferrer")}
                   >
-                    <FaDiscord className="text-blue-500 h-[1.3rem]! w-[1.3rem]!" fill="currentColor" />
+                    <FaTelegramPlane className="text-sky-500 h-[1.3rem]! w-[1.3rem]!" fill="currentColor" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  <p>Discord сервер</p>
+                  <p>Telegram-канал SolyxClub</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -175,13 +159,13 @@ export default function App() {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => window.open(GITHUB_REPO_URL, "_blank", "noreferrer")}
+                    onClick={() => window.open(F1NATORY_GITHUB_URL, "_blank", "noreferrer")}
                   >
                     <FaGithub className="text-foreground h-[1.3rem]! w-[1.3rem]!" fill="currentColor" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  <p>Исходный код на Github</p>
+                  <p>GitHub f1natory</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -191,80 +175,49 @@ export default function App() {
             className="flex h-full flex-col p-1 pt-0 overflow-hidden overflow-x-auto overflow-y-auto rounded-md"
             viewportClassName="gap-2"
           >
-            {/* Проверка IP адреса на геолокацию, отключил за ненадобностью */}
-            {/* {devtoolsEnabled && <IPChecker />} */}
-
-            {appMetaQuery.isSuccess &&
-              appMetaQuery.data &&
-              appMetaQuery.data.modStable !== import.meta.env.VITE_MOD_VERSION && (
-                <div
-                  className="m-4 py-4 px-5 flex flex-row justify-center items-center gap-3 bg-secondary border-border rounded-xl hover:scale-105 transition-all cursor-pointer"
-                  onClick={() => window.open(appMetaQuery.data.downloadUrl, "_blank", "noreferrer")}
-                >
-                  <RxUpdate className="text-foreground h-[2.5rem]! w-[2.5rem]!" fill="currentColor" />
-                  <div className="flex flex-col gap-1 justify-center items-start">
-                    <span className="text-foreground text-base font-semibold">
-                      Доступно обновление v{appMetaQuery.data.modStable}
-                    </span>
-                    <span className="text-muted-foreground text-sm">Нажмите, чтобы скачать новую версию мода</span>
-                  </div>
-                </div>
-              )}
-
             <Downloader />
             <NewYearSnowfall />
-            <DiscordRPC />
             <AutoLiker />
             <CustomThemes />
             <FontChanger />
             <ScaleChanger />
             <AutoBestQuality />
 
-            <Settings />
             <Devtools />
 
             {devtoolsEnabled && (
               <>
                 <ExperimentsToggle />
-                {/* <Playground /> */}
+
               </>
             )}
 
-            <div className="flex flex-col gap-4 justify-center items-center m-6 ">
-              <div
-                className="py-3 px-2 w-full flex flex-row justify-center items-center gap-4 border-violet-400 border-1 rounded-xl hover:scale-105 transition-all cursor-pointer opacity-90 dark:opacity-100"
-                style={{
-                  backgroundImage: `url(${discordBg})`,
-                  backgroundSize: "contain",
-                  backgroundRepeat: "repeat-x",
-                  zoom: ".9",
-                }}
-                onClick={() => window.open(DISCORD_INVITE_URL, "_blank", "noreferrer")}
-              >
-                <FaDiscord className="text-white h-[2.5rem]! w-[2.5rem]!" fill="currentColor" />
-                <div className="flex flex-col gap-1 justify-center items-start">
-                  <span className="text-white text-lg font-semibold">Yandex Music Mod</span>
-                  <span className="text-slate-200 text-sm mt-[-3px]">Присоединяйтесь к нам в Discord</span>
+            <ExpandableCard title="Credits" icon={<Heart className="h-4 w-4 text-red-500" />}>
+              <div className="flex flex-col gap-2 pt-2 px-3 text-sm">
+                <div
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/30 hover:bg-secondary/60 transition-colors cursor-pointer"
+                  onClick={() => window.open(F1NATORY_GITHUB_URL, "_blank", "noreferrer")}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FaGithub className="h-4 w-4 text-foreground" fill="currentColor" />
+                    <span className="font-medium text-foreground">Solyx Music (f1natory)</span>
+                  </div>
+                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+
+                <div
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-secondary/30 hover:bg-secondary/60 transition-colors cursor-pointer"
+                  onClick={() => window.open(ORIGINAL_MOD_URL, "_blank", "noreferrer")}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FaGithub className="h-4 w-4 text-muted-foreground" fill="currentColor" />
+                    <span className="font-medium text-muted-foreground">Original Mod (Stephanzion)</span>
+                  </div>
+                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
               </div>
+            </ExpandableCard>
 
-              {/* <div
-                className="py-3 px-6 w-full flex flex-row justify-center items-center gap-4 border-amber-500 border-1 rounded-xl hover:scale-105 transition-all cursor-pointer opacity-90 dark:opacity-100"
-                style={{
-                  backgroundImage: `url(${boostyBg})`,
-                  backgroundSize: "contain",
-                  backgroundRepeat: "repeat-x",
-                  zoom: ".9",
-                }}
-                onClick={() => window.open(BOOSTY_URL, "_blank", "noreferrer")}
-              >
-                <SiBoosty className="text-white h-[3rem]! w-[3rem]!" fill="currentColor" />
-                <div className="flex flex-col gap-1 justify-center items-start">
-                  <span className="text-white text-lg font-semibold">Поддержать на boosty</span>
-                  <span className="text-white/80 text-sm mt-[-3px]">Ранний доступ к обновлениям и роль в Discord</span>
-                </div>
-              </div> */}
-            </div>
           </ScrollArea>
 
           <div className="m-4 flex flex-row">

@@ -15,6 +15,8 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@ui": path.resolve(__dirname, "./src/mod/features/ui"),
+        "@visual": path.resolve(__dirname, "./src/mod/visual/engine"),
+        "@visual-formats": path.resolve(__dirname, "./src/mod/visual/formats"),
         "~": path.resolve(__dirname, "./src"),
       },
     },

@@ -3,35 +3,26 @@ import { getTrackUrl, getTracksInfo, QualityEnum } from "~/mod/features/utils/ap
 import { musixmatchApi } from "@ui/external-apis/musixmatch";
 import { type Lyrics, type Subtitle } from "@ui/external-apis/musixmatch/models";
 import { toast } from "sonner";
-import * as Sentry from "@sentry/react";
 
-// Заменить hasPlus на true, когда яндекс получает информацию о текущем пользователе
 onYandexApiResponse("api.music.yandex.net/account/about", async function (response: any) {
   const data = response.data;
   data.hasPlus = true;
-  Sentry.setUser({
-    id: data.uid,
-    username: data.login,
-  });
   console.log(`[PlusUnlocker] Change hasPlus value:`, data);
   return data;
 });
 
-// Убрать рекламу яндекса в виде контента в подборках
 onYandexApiResponse("/editorial-promotion", async function (response: any) {
   console.log(`[PlusUnlocker] Remove promotions:`, response.data);
   const result = { promotions: [] };
   return result;
 });
 
-// Не знаю, что это, но как то связано с плюсом, так что убрал
 onYandexApiResponse("/proxy/plus-red-alert/v1/alerts", async function (response: any) {
   console.log(`[PlusUnlocker] Remove plus-red-alert:`, response.data);
   const result = { alerts: [] };
   return result;
 });
 
-// Убрать рекламу из треков
 onYandexApiResponse("api.music.yandex.net/get-file-info", async function (response: any) {
   const url: string = response.url;
   const data = response.data;
@@ -55,7 +46,6 @@ onYandexApiResponse("api.music.yandex.net/get-file-info", async function (respon
   }
 });
 
-// Убрать рекламу из обложек треков (разраб яндекса если ты это читаешь - как же ты заморочился паскуда)
 onYandexApiResponse("api.music.yandex.net", async (response: any) => {
   function walk(obj: any, cb: (node: any, path: (string | number)[]) => void, path: (string | number)[] = []): void {
     if (obj && typeof obj === "object") {
@@ -103,7 +93,6 @@ onYandexApiResponse("api.music.yandex.net", async (response: any) => {
   return source;
 });
 
-// Убрать блоки донатов артистам
 onYandexApiResponse("/donation", async function (response: any) {
   console.log(`[PlusUnlocker] Remove donations`, response);
   return {
@@ -111,7 +100,6 @@ onYandexApiResponse("/donation", async function (response: any) {
   };
 });
 
-// Убрать блоки концертов если блок концертов отключен
 onYandexApiResponse("/concerts", async function (response: any) {
   const hiddenMenuItems = (await window.yandexMusicMod.getStorageValue("custom-themes/hideMenuItems")) || [];
 

@@ -40,21 +40,11 @@ class GeniusApi {
 		);
 	}
 
-	/**
-	 * Searches for songs on Genius.
-	 * @param query The search query.
-	 * @returns A promise that resolves to the search results.
-	 */
 	public search(query: string): ResultAsync<GeniusSearchResponse, Error> {
 		const endpoint = `search/multi?q=${encodeURIComponent(query)}`;
 		return this.request<GeniusSearchResponse>(endpoint);
 	}
 
-	/**
-	 * Gets a song by its ID from Genius.
-	 * @param songId The ID of the song.
-	 * @returns A promise that resolves to the song data.
-	 */
 	public getSong(songId: number): ResultAsync<GeniusSongResponse, Error> {
 		const endpoint = `songs/${songId}`;
 		return this.request<GeniusSongResponse>(endpoint);

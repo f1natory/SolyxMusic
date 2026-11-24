@@ -1,10 +1,8 @@
 import { getTrackMeta, getProgress, isPlaying } from "~/mod/features/utils/player";
-import * as Sentry from "@sentry/react";
 
 let isRpcEnabled = true;
 let showModButton = true;
 
-// Функция для получения состояния плеера из окна приложения. Её вызывает main процесс - src\mod\main.js
 window.__getPlayerState = () => {
   const trackMetaRequest = getTrackMeta();
   const playbackRequest = getProgress();
@@ -12,7 +10,6 @@ window.__getPlayerState = () => {
 
   if (trackMetaRequest.isErr()) {
     if (trackMetaRequest.error !== "upgrade_promocode") {
-      Sentry.captureException("Error getting track meta:", { extra: { trackMetaRequest: trackMetaRequest.error } });
       console.error("Error getting track meta:", trackMetaRequest.error);
     }
     return {
@@ -23,7 +20,6 @@ window.__getPlayerState = () => {
   }
 
   if (playbackRequest.isErr()) {
-    Sentry.captureException("Error getting player progress:", { extra: { playbackRequest: playbackRequest.error } });
     console.error("Error getting player progress:", playbackRequest.error);
     return {
       enabled: isRpcEnabled,
@@ -33,7 +29,6 @@ window.__getPlayerState = () => {
   }
 
   if (isPlayingRequest.isErr()) {
-    Sentry.captureException("Error getting isPlaying:", { extra: { isPlayingRequest: isPlayingRequest.error } });
     console.error("Error getting isPlaying:", isPlayingRequest.error);
     return {
       enabled: isRpcEnabled,

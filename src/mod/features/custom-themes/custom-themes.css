@@ -9,8 +9,6 @@
   --yandexMusicModPalette-700: color-mix(in srgb, var(--yandexMusicModAccent) 80%, black 20%);
   --yandexMusicModPalette-800: color-mix(in srgb, var(--yandexMusicModAccent) 90%, black 10%);
   --yandexMusicModPalette-900: color-mix(in srgb, var(--yandexMusicModAccent) 95%, black 5%);
-
-  /* Light theme palette - white-based */
   --yandexMusicModPalette-light-50: color-mix(in srgb, var(--yandexMusicModAccent) 6%, white 94%);
   --yandexMusicModPalette-light-100: color-mix(in srgb, var(--yandexMusicModAccent) 9%, white 91%);
   --yandexMusicModPalette-light-200: color-mix(in srgb, var(--yandexMusicModAccent) 30%, white 70%);
@@ -38,8 +36,6 @@ div[class*="VibeAnimation_root__"]:after {
   --ym-controls-color-primary-outline-disabled: var(--yandexMusicModPalette-800) !important;
   --ym-controls-color-primary-outline-enabled: var(--yandexMusicModPalette-200) !important;
   --ym-controls-color-primary-outline-hovered: var(--yandexMusicModPalette-200) !important;
-
-  /* --ym-controls-color-secondary-default-hovered: var(--yandexMusicModPalette-300) !important; */
 
   --ym-controls-color-primary-outline-selected_stroke: var(--yandexMusicModPalette-800) !important;
 

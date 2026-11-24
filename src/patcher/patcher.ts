@@ -1,3 +1,4 @@
+import { matchUpstreamAuth } from "../../scripts/upstream-auth";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "url";
@@ -12,6 +13,20 @@ import type { AppBuild } from "~/types/AppBuild";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const __projectRoot = path.resolve(__dirname, "..", "..");
+
+function findFileRecursively(dir: string, fileName: string): string | null {
+  if (!fs.existsSync(dir)) return null;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isFile() && entry.name === fileName) return full;
+    if (entry.isDirectory()) {
+      const found = findFileRecursively(full, fileName);
+      if (found) return found;
+    }
+  }
+  return null;
+}
 
 export async function processBuild(build: AppBuild) {
   const isMacOS = process.platform === "darwin";
@@ -63,11 +78,28 @@ export async function processBuild(build: AppBuild) {
 
   logProgress(`[3] Find and extract app.asar`);
 
-  const appAsarPath = path.resolve(path.join(extractDir, "resources", "app.asar"));
-  const appIconPath = path.resolve(path.join(extractDir, "resources", "assets", "icon.ico"));
+  let appAsarPath = path.resolve(path.join(extractDir, "resources", "app.asar"));
+  if (!fs.existsSync(appAsarPath)) {
+    const found = findFileRecursively(extractDir, "app.asar");
+    if (found) {
+      appAsarPath = found;
+    } else {
+      const nested7z = findFileRecursively(extractDir, "app-64.7z") || findFileRecursively(extractDir, "app-32.7z");
+      if (nested7z) {
+        logProgress(`[3.1] Unpacking nested archive ${nested7z}`);
+        try {
+          await _7z.unpack(nested7z, extractDir);
+          const afterUnpack = findFileRecursively(extractDir, "app.asar");
+          if (afterUnpack) appAsarPath = afterUnpack;
+        } catch (e) {
+          logProgress(`⚠️ Failed to unpack nested archive: ${e}`);
+        }
+      }
+    }
+  }
 
-  if (appAsarPath) {
-    logProgress(`✔️   Found app.asar`);
+  if (fs.existsSync(appAsarPath)) {
+    logProgress(`✔️   Found app.asar at ${appAsarPath}`);
   } else {
     logProgress(`❌ app.asar was not found inside the extracted installer for ${build.version}`);
     return;
@@ -83,15 +115,23 @@ export async function processBuild(build: AppBuild) {
 
   try {
     fs.mkdirSync(path.join(buildModdedDir, "assets"), { recursive: true });
-    fs.copyFileSync(appIconPath, path.join(buildModdedDir, "assets", "icon.ico"));
-    fs.copyFileSync(path.join(__projectRoot, "yaicon.png"), path.join(buildModdedDir, "assets", "icon.png"));
-    if (isMacOS) {
-      fs.copyFileSync(path.join(__projectRoot, "yaicon.png"), path.join(buildModdedDir, "assets", "icon.icns"));
+    let appIconPath = path.resolve(path.join(extractDir, "resources", "assets", "icon.ico"));
+    if (!fs.existsSync(appIconPath)) {
+      const foundIcon = findFileRecursively(extractDir, "icon.ico");
+      if (foundIcon) appIconPath = foundIcon;
+    }
+    if (fs.existsSync(appIconPath)) {
+      fs.copyFileSync(appIconPath, path.join(buildModdedDir, "assets", "icon.ico"));
+    }
+    if (fs.existsSync(path.join(__projectRoot, "yaicon.png"))) {
+      fs.copyFileSync(path.join(__projectRoot, "yaicon.png"), path.join(buildModdedDir, "assets", "icon.png"));
+      if (isMacOS) {
+        fs.copyFileSync(path.join(__projectRoot, "yaicon.png"), path.join(buildModdedDir, "assets", "icon.icns"));
+      }
     }
     logProgress(`✔️   Extracted app icons`);
   } catch (error) {
-    logProgress(`❌ Failed to extract app icons: ${error}`);
-    return;
+    logProgress(`⚠️  Warning on app icons extraction: ${error}`);
   }
 
   logProgress(`[4] Cleaning up temporary files`);
@@ -116,7 +156,6 @@ export async function processBuild(build: AppBuild) {
 
   logProgress(`[6] Patching app.asar`);
 
-  // Key files for patching
   const staticFiles = {
     packageJson: path.join(buildModdedDir, "package.json"),
     indexJs: path.join(buildModdedDir, "index.js"),
@@ -141,21 +180,27 @@ export async function processBuild(build: AppBuild) {
   packageJsonContents.dependencies = packageJsonContents.dependencies || {};
   packageJsonContents.devDependencies = packageJsonContents.devDependencies || {};
 
-  const bannedDependencies = ["@yandex-chats/signer"];
+  const isBannedDep = (dep: string) =>
+    dep.startsWith("@yandex-chats/") ||
+    dep.startsWith("@yandex-music-int/") ||
+    dep.startsWith("@yandex-int/") ||
+    dep.includes("certificate-verification");
+
   packageJsonContents.dependencies = Object.fromEntries(
-    Object.entries(packageJsonContents.dependencies).filter(([key]) => !bannedDependencies.includes(key)),
+    Object.entries(packageJsonContents.dependencies).filter(([key]) => !isBannedDep(key)),
   );
   packageJsonContents.devDependencies = Object.fromEntries(
-    Object.entries(packageJsonContents.devDependencies).filter(([key]) => !bannedDependencies.includes(key)),
+    Object.entries(packageJsonContents.devDependencies).filter(([key]) => !isBannedDep(key)),
   );
-  packageJsonContents.name = "YandexMusicMod";
-  packageJsonContents.author = "Stephanzion [github.com/Stephanzion]";
+  packageJsonContents.name = "SolyxMusic";
+  packageJsonContents.author = "Solyx Music [github.com/f1natory/SolyxMusic]";
   packageJsonContents.build = {
     appId: "ru.yandex.desktop.music.mod",
     productName: "Яндекс Музыка",
+    files: ["**/*", "node_modules/@yandex-music-int/**/*"],
     win: {
       icon: "assets/icon.ico",
-      requestedExecutionLevel: "requireAdministrator",
+      requestedExecutionLevel: "asInvoker",
     },
     mac: {
       icon: "assets/icon.icns",
@@ -196,11 +241,21 @@ export async function processBuild(build: AppBuild) {
 
   let indexJsContents = fs.readFileSync(staticFiles.indexJs, "utf8");
 
+  indexJsContents = indexJsContents.replace(
+    /require\(['"]@yandex-music-int\/electron-certificate-verification['"]\)/g,
+    "({ setupCertificateVerificationCoordinator: () => ({ dispose: () => {} }), CERTIFICATE_VERIFICATION_SESSION_NAMES: { chromium: 'chromium', updater: 'updater' } })",
+  );
+  indexJsContents = indexJsContents.replace(
+    /await setupCertificateVerification\([^)]*\);?/g,
+    "void 0;",
+  );
+
   indexJsContents =
     `
     const yandexMusicMod_fs = require("fs");
     const yandexMusicMod_path = require("path");
     const yandexMusicMod_electron = require("electron");
+
     const yandexMusicMod_appFolder = yandexMusicMod_electron.app.getPath("userData");
     const yandexMusicMod_settingsFilePath = yandexMusicMod_path.join(yandexMusicMod_appFolder, "mod_settings.json");
     let enableSystemToolbar = false;
@@ -214,22 +269,15 @@ export async function processBuild(build: AppBuild) {
       "constructor() { return \n",
     );
   } else {
-    logProgress(`❌ Updater class is not found in index.js`);
-    return;
+    logProgress(`⚠️  Updater class not found in index.js, skipping`);
   }
 
   if (/minWidth:\s768/g.test(indexJsContents)) {
     indexJsContents = indexJsContents.replace(/minWidth:\s768/g, "minWidth: 360");
-  } else {
-    logProgress(`❌ "minWidth: 768" is not found in index.js`);
-    return;
   }
 
   if (/minHeight:\s650/g.test(indexJsContents)) {
     indexJsContents = indexJsContents.replace(/minHeight:\s650/g, "minHeight: 550");
-  } else {
-    logProgress(`❌ "minHeight: 650" is not found in index.js`);
-    return;
   }
 
   if (/titleBarStyle:\s"hidden"/g.test(indexJsContents)) {
@@ -237,9 +285,6 @@ export async function processBuild(build: AppBuild) {
       /titleBarStyle:\s"hidden"/g,
       "titleBarStyle: !enableSystemToolbar ? 'hidden' : 'default'",
     );
-  } else {
-    logProgress(`❌ "titleBarStyle: 'hidden'" is not found in index.js`);
-    return;
   }
 
   if (/const window = new electron.BrowserWindow\({\s+show: false/g.test(indexJsContents)) {
@@ -247,9 +292,6 @@ export async function processBuild(build: AppBuild) {
       /const window = new electron.BrowserWindow\({\s+show: false/g,
       "const window = new electron.BrowserWindow({\n show: true",
     );
-  } else {
-    logProgress(`❌ "const window = new electron.BrowserWindow({ show: false" is not found in index.js`);
-    return;
   }
 
   if (/const webPreferences = {/g.test(indexJsContents)) {
@@ -257,28 +299,14 @@ export async function processBuild(build: AppBuild) {
       /const webPreferences = {/g,
       "const webPreferences = {\n devTools: true, \n",
     );
-  } else {
-    logProgress(`❌ "const webPreferences = {" is not found in index.js`);
-    return;
   }
 
-  if (/webSecurity: true/g.test(indexJsContents)) {
-    indexJsContents = indexJsContents.replace(/webSecurity: true/g, "webSecurity: false \n");
-  } else {
-    logProgress(`❌ "webSecurity: true" is not found in index.js`);
-    return;
-  }
-
-  // Автоматически открывать devtools при запуске приложения
   if (/return window/g.test(indexJsContents)) {
     if (process.env.AUTO_OPEN_DEVTOOLS?.toLowerCase() === "true")
       indexJsContents = indexJsContents.replace(
         /return window/g,
         "window.webContents.openDevTools();\n" + "return window",
       );
-  } else {
-    logProgress(`❌ "return window" is not found in index.js`);
-    return;
   }
 
   if (/window.once\("ready-to-show", \(\) => {/g.test(indexJsContents)) {
@@ -293,14 +321,11 @@ export async function processBuild(build: AppBuild) {
                 focusedWindow.webContents.toggleDevTools();
               }
             });
+
           `,
     );
-  } else {
-    logProgress(`❌ "window.once("ready-to-show", () => {" is not found in index.js`);
-    return;
   }
 
-  // Отключить аналитику
   if (/return window/g.test(indexJsContents)) {
     const blockedAnalyticsUrls = [
       "https://yandex.ru/clck/*",
@@ -329,24 +354,11 @@ export async function processBuild(build: AppBuild) {
         },
       );
 
-      window.webContents.session.webRequest.onBeforeSendHeaders(
-      {
-        urls: ["https://api.music.yandex.net/*"],
-      },
-      (details, callback) => {
-        const bannedHeaders = ["x-yandex-music-device", "x-request-id"];
-        bannedHeaders.forEach((header) => {
-          details.requestHeaders[header] = undefined;
-        });
-        callback({ requestHeaders: details.requestHeaders });
-      },
-    );` + "return window",
+      ` + "return window",
     );
-  } else {
-    logProgress(`❌ "return window" is not found in index.js`);
-    return;
   }
 
+  indexJsContents = matchUpstreamAuth(indexJsContents);
   fs.writeFileSync(staticFiles.indexJs, indexJsContents);
 
   logProgress(`✔️   Done`);
@@ -358,8 +370,7 @@ export async function processBuild(build: AppBuild) {
     fs.rmSync(splashScreenPath, { recursive: true, force: true });
     logProgress(`✔️   Done`);
   } else {
-    logProgress(`❌ Splash screen was not found inside the sources for ${build.version}`);
-    return;
+    logProgress(`ℹ️   Splash screen not found inside sources, skipping`);
   }
 
   logProgress(`🛠️  Copy mods to build`);
@@ -414,6 +425,34 @@ export async function processBuild(build: AppBuild) {
   fs.writeFileSync(path.join(buildModdedDir, "app", "yandexMusicMod", "renderer.js"), modRendererContents);
 
   const appPath = path.join(buildModdedDir, "app");
+
+  const chunksDir = path.join(appPath, "_next", "static", "chunks");
+  if (fs.existsSync(chunksDir)) {
+    const chunkFiles = (fs.readdirSync(chunksDir, { recursive: true }) as string[]).filter((file) => file.endsWith(".js"));
+    for (const chunkFile of chunkFiles) {
+      const chunkPath = path.join(chunksDir, chunkFile);
+      let content = fs.readFileSync(chunkPath, "utf8");
+      if (!content.includes("__yandexMusicStore") && content.includes("E_CONTEXT_STORE_NULL")) {
+        const needle1 = 'code:"E_CONTEXT_STORE_NULL"';
+        const needle2 = 'code: "E_CONTEXT_STORE_NULL"';
+        let idx = content.indexOf(needle1);
+        if (idx === -1) idx = content.indexOf(needle2);
+        if (idx !== -1) {
+          const returnIdx = content.indexOf("return e", idx);
+          if (returnIdx !== -1 && returnIdx - idx < 100) {
+            content =
+              content.slice(0, idx) +
+              'code: "E_CONTEXT_STORE_NULL" }); try { window.__yandexMusicStore = e; } catch (err) {}\n return e' +
+              content.slice(returnIdx + 8);
+            fs.writeFileSync(chunkPath, content);
+            logProgress(`✔️   Injected __yandexMusicStore exposure into ${chunkFile}`);
+          }
+        }
+      }
+
+    }
+  }
+
   const htmlFiles = (fs.readdirSync(appPath, { recursive: true }) as string[]).filter((file) => file.endsWith(".html"));
 
   for (const htmlFile of htmlFiles) {
@@ -445,9 +484,28 @@ export async function processBuild(build: AppBuild) {
 
   await $`bun install`.cwd(buildModdedDir);
 
-  // await $`bunx electron .`.cwd(buildModdedDir);
+  const srcYandexInt = path.join(buildSourceDir, "node_modules", "@yandex-music-int");
+  const modYandexInt = path.join(buildModdedDir, "node_modules", "@yandex-music-int");
+  if (fs.existsSync(srcYandexInt) && !fs.existsSync(modYandexInt)) {
+    fs.cpSync(srcYandexInt, modYandexInt, { recursive: true });
+  }
 
-  await $`bunx electron-builder`.cwd(buildModdedDir);
+  await $`bun run electron-builder`.cwd(buildModdedDir);
+
+  try {
+    const distDir = path.join(buildModdedDir, "dist");
+    if (fs.existsSync(distDir)) {
+      const files = fs.readdirSync(distDir);
+      for (const file of files) {
+        if (file.endsWith(".exe")) {
+          fs.copyFileSync(path.join(distDir, file), path.join(__projectRoot, file));
+          logProgress(`✔️   Copied installer ${file} to root workspace`);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Failed to copy installer to root:", err);
+  }
 
   logProgress(`✔️   Done`);
 

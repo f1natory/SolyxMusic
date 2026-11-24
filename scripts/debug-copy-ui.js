@@ -4,23 +4,26 @@ import fs from "fs";
 
 await $`bun run ui:build`;
 
-const modPath = ".versions/5.86.0/mod/app/yandexMusicMod/";
+const versionsDir = ".versions";
+let activeVer = "5.126.1";
+if (fs.existsSync(versionsDir)) {
+  const dirs = fs.readdirSync(versionsDir);
+  if (dirs.length > 0) activeVer = dirs[dirs.length - 1];
+}
+const modPath = `.versions/${activeVer}/mod/app/yandexMusicMod/`;
 const sourcesPath = "src/mod/dist/";
 
-// Ensure the modPath directory exists
 fs.mkdirSync(modPath, { recursive: true });
 
-// Recursive function to copy all files and directories
 function copyRecursively(src, dest) {
   const stats = fs.statSync(src);
 
   if (stats.isDirectory()) {
-    // Create directory if it doesn't exist
+
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest, { recursive: true });
     }
 
-    // Get all items in the directory
     const items = fs.readdirSync(src);
 
     for (const item of items) {
@@ -29,17 +32,15 @@ function copyRecursively(src, dest) {
       copyRecursively(srcPath, destPath);
     }
   } else if (stats.isFile()) {
-    // Copy file
+
     fs.copyFileSync(src, dest);
     console.log(`Copied: ${path.relative(sourcesPath, src)}`);
   }
 }
 
-// Copy all files and directories from sources to modPath
 console.log(`Copying all files and directories from ${sourcesPath} to ${modPath}`);
 copyRecursively(sourcesPath, modPath);
 
-// Wrap renderer.js with async function
 const rendererPath = path.join(modPath, "renderer.js");
 if (fs.existsSync(rendererPath)) {
   console.log("Wrapping renderer.js with async function...");

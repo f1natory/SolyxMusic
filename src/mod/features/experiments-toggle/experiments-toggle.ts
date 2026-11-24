@@ -21,10 +21,8 @@ onYandexApiResponse("/account/experiments/details", async function (response: an
     return response.data;
   }
 
-  // Clone the original response data
   const modifiedData = { ...response.data };
 
-  // Apply overrides from settings
   experimentsOverride.forEach((override: any) => {
     if (override.id && modifiedData[override.id]) {
       console.log(`[experimentsOverride] Overriding experiment ${override.id}:`, override.value);

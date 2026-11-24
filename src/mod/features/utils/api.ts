@@ -19,15 +19,13 @@ const headers = {
   Authorization: OAuthToken,
 };
 
-// Create axios client with common headers
 const yandexMusicClient: AxiosInstance = axios.create({
   baseURL: "https://api.music.yandex.net",
   headers: headers,
-  // Prevent axios from throwing on HTTP error status codes
+
   validateStatus: () => true,
 });
 
-// HMAC sign function
 export async function getSign(params: { secretKey: string; data: string }): Promise<Result<string, string>> {
   try {
     const { secretKey, data } = params;
@@ -57,7 +55,6 @@ export async function getSign(params: { secretKey: string; data: string }): Prom
   }
 }
 
-// Получить прямую ссылку на трек
 export async function getTrackUrl(trackId: string, quality: QualityEnum): Promise<Result<any, string>> {
   try {
     const ts = Math.floor(Date.now() / 1000);
@@ -97,7 +94,6 @@ export async function getTrackUrl(trackId: string, quality: QualityEnum): Promis
   }
 }
 
-// Получить треки из альбома
 export async function getAlbumTracks(id: string): Promise<Result<string[], string>> {
   try {
     const response = await yandexMusicClient.get(
@@ -120,7 +116,6 @@ export async function getAlbumTracks(id: string): Promise<Result<string[], strin
   }
 }
 
-// Получить треки из плейлиста
 export async function getPlaylistTracks(id: string): Promise<Result<string[], string>> {
   try {
     const response = await yandexMusicClient.get(`/playlist/${id}?resumeStream=false&richTracks=false`);
@@ -141,7 +136,6 @@ export async function getPlaylistTracks(id: string): Promise<Result<string[], st
   }
 }
 
-// Получить треки артиста
 export async function getArtistTracks(id: string): Promise<Result<string[], string>> {
   try {
     const response = await yandexMusicClient.get(`/artists/${id}/track-ids?`);
@@ -162,7 +156,6 @@ export async function getArtistTracks(id: string): Promise<Result<string[], stri
   }
 }
 
-// Получить треки по айди
 export async function getTracksInfo(trackIds: string[], skipAuth = false): Promise<Result<Array<any>, string>> {
   try {
     const queryTracks = trackIds.join(",");
@@ -191,7 +184,6 @@ export async function getTracksInfo(trackIds: string[], skipAuth = false): Promi
   }
 }
 
-// Добавить трек в лайки пользователя
 export async function likeTrack(userId: number, trackId: string): Promise<Result<any, string>> {
   try {
     const response = await yandexMusicClient.post(
@@ -215,7 +207,6 @@ export async function likeTrack(userId: number, trackId: string): Promise<Result
   }
 }
 
-// Получить информацию об аккаунте
 export async function getAccountInfo(): Promise<Result<{ uid: number }, string>> {
   try {
     const response = await yandexMusicClient.get("/account/about");
@@ -254,7 +245,6 @@ export async function getLikesAndHistory(): Promise<
   }
 }
 
-// Получить настройки аккаунта
 export async function getAccountSettings(): Promise<
   Result<{ adsDisabled: boolean; userMusicVisibility: string }, string>
 > {
@@ -275,7 +265,6 @@ export async function getAccountSettings(): Promise<
   }
 }
 
-// Обновить настройки аккаунта (по ключу и значению)
 export async function updateAccountSettings(
   key: string,
   value: string | number | boolean,
@@ -293,7 +282,6 @@ export async function updateAccountSettings(
   }
 }
 
-// Получить настройки аккаунта
 export async function getAccountExperiments(): Promise<Result<any, string>> {
   try {
     const response = await yandexMusicClient.get("/account/experiments/details");

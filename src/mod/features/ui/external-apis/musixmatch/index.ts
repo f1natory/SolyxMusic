@@ -55,7 +55,6 @@ class MusixmatchApi {
         part: "lyrics_crowd,user,lyrics_vote,lyrics_poll,track_lyrics_translation_status,lyrics_verified_by,labels,track_structure",
       };
 
-      // Add duration-related parameters if duration is provided
       if (duration !== undefined) {
         Object.assign(baseParams, {
           f_subtitle_length: duration.toString(),
@@ -104,7 +103,6 @@ class MusixmatchApi {
         part: "lyrics_crowd,user,lyrics_vote,lyrics_poll,track_lyrics_translation_status,lyrics_verified_by,labels,track_structure",
       };
 
-      // Add duration-related parameters if duration is provided
       if (duration !== undefined) {
         Object.assign(baseParams, {
           f_subtitle_length: duration.toString(),
@@ -120,7 +118,6 @@ class MusixmatchApi {
         return err(signedUrlResult.error.message);
       }
 
-      // Create a custom client instance with specific headers for this endpoint
       const response = await axios.get(`${MUSIXMATCH_API_URL}${signedUrlResult.value}`, {
         headers: {
           "accept-encoding": "gzip",

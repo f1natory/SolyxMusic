@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="32" viewBox="0 0 260 32" role="img" aria-label="Скачать для Windows">
+  <defs><linearGradient id="blue" x2="0" y2="1"><stop stop-color="#16a4d5"/><stop offset="1" stop-color="#087dbb"/></linearGradient><clipPath id="round"><rect width="260" height="32" rx="4"/></clipPath></defs>
+  <g clip-path="url(#round)"><path fill="#62676b" d="M0 0h36v32H0z"/><path fill="url(#blue)" d="M36 0h224v32H36z"/></g>
+  <path fill="#fff" d="m10 9 7-1v7h-7zm8-1 8-1v8h-8zm-8 8h7v7l-7-1zm8 0h8v9l-8-1z"/>
+  <text x="147" y="21" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600">Скачать для Windows</text>
+</svg>

@@ -22,7 +22,6 @@ import { Input } from "@ui/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip";
 
 import { Info, FolderOpen, Folder, Download } from "lucide-react";
-import * as Sentry from "@sentry/react";
 
 enum pageTypeEnum {
   OTHER,
@@ -46,7 +45,6 @@ export function Downloader() {
   const [downloadFolderPath, setDownloadFolderPath] = useState<string | null>(null);
   const downloadCancelledRef = useRef(false);
 
-  // Load saved download folder path on component mount
   useEffect(() => {
     const loadDownloadPath = async () => {
       try {
@@ -61,7 +59,6 @@ export function Downloader() {
     loadDownloadPath();
   }, []);
 
-  // Save download folder path when it changes
   const saveDownloadPath = async (path: string | null) => {
     try {
       await window.yandexMusicMod.setStorageValue("downloadFolderPath", path);
@@ -72,7 +69,6 @@ export function Downloader() {
     }
   };
 
-  // Handle folder selection
   const handleSelectFolder = async () => {
     try {
       const result = await window.yandexMusicMod.selectDownloadFolder();
@@ -88,7 +84,6 @@ export function Downloader() {
     }
   };
 
-  // Handle opening folder
   const handleOpenFolder = async () => {
     if (!downloadFolderPath) {
       toast.warning("Папка не выбрана");
@@ -202,8 +197,6 @@ export function Downloader() {
         });
         continue;
       }
-
-      Sentry.metrics.count("tracks_downloaded", 1);
 
       console.log("[Downloader] got track download url", tracks[i], downloadInfo.value);
 
